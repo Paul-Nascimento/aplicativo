@@ -84,7 +84,13 @@
 
                     {% if dado.liberacao == True %}
                         <td>Sim</td>
-                        <td>{{ dado.data_liberacao.strftime("%d/%m/%y") }}</td>
+
+
+
+                        <td>{{ dado.data_liberacao|string()}}</td>
+
+
+
                         <td>{{ dado.responsavel_liberacao }}</td>
                         <td>{{ dado.movimento_liberacao }}</td>
                     {% else %}

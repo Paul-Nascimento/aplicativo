@@ -85,13 +85,12 @@ class Empresa(db.Model):
         self.data_envio_de_email = data_envio_de_email
         self.responsavel_envio_de_email = responsavel_envio_de_email
 
+class Emails(db.Model):
+    __tablename__ = "emails"
+    id = db.Column(db.Integer,nullable=False,primary_key=True)
+    nome = db.Column(db.String(50), nullable=False)
+    email = db.Column(db.String(100), nullable=False)
 
-# class Emails(db.Model):
-#     __tablename__ = "emails"
-#     id = db.Column(db.Integer,nullable=False,primary_key=True)
-#     nome = db.Column(db.String(50), nullable=False)
-#     email = db.Column(db.String(100), nullable=False)
-#     cnpj = db.Column(db.String(14), nullable=False)
 
 with app.app_context():
     db.create_all()
@@ -216,7 +215,7 @@ def atualizar_dados(id):
 def liberar_empresas():
     formulario_de_liberacao = LiberacaoForm()
     form = FiltrarLiberacaoForm()
-    dados = Empresa.query.all()
+    dados = Empresa.query.order_by(Empresa.grupo).all()
     if request.method == "POST":
 
 
@@ -267,13 +266,12 @@ def liberar_empresas():
                 if texto == "":
                     query = Empresa.query.order_by(Empresa.grupo).all()
                 else:
-                    sql = text(f"select * from empresas where {texto}")
+                    sql = text(f"select * from empresas where {texto} ORDER BY grupo")
                     query = db.engine.execute(sql)
 
                 print(query)
 
                 return render_template("liberadas.html",form=formulario_de_liberacao,dados=query,filtro=form)
-
 
         id = request.form["empresas"]
         ids = id.split(",")
@@ -281,7 +279,6 @@ def liberar_empresas():
         data = None
         responsavel_liberacao = None
         movimento_liberacao = None
-
 
         if formulario_de_liberacao.liberar.data:
             status_de_liberacao = True
@@ -358,6 +355,11 @@ def notas_fiscais():
     if request.method=="POST":
         print("Nota registrada com sucesso")
     return render_template('notas_fiscais.html',form=formulario_de_notas)
+
+@app.route("/visualizar_emails",methods=["GET","POST"])
+def visualizar_emails():
+
+    return render_template("visualizar_emails.html")
 
 
 @app.route("/resumo")
