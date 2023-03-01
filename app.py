@@ -1,10 +1,11 @@
 from flask import Flask,render_template,request,url_for,redirect,flash,jsonify
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import text
 from flask_wtf import FlaskForm
 from wtforms import StringField,SubmitField,DateField,IntegerField,SelectField
 from wtforms.validators import DataRequired,NumberRange
 import datetime
-from forms import LiberacaoForm,ApuracaoForm,RegistrarEmpresaForm,AlteracaoForm,NotaFiscalForm,FiltrarForm
+from forms import LiberacaoForm,ApuracaoForm,RegistrarEmpresaForm,AlteracaoForm,NotaFiscalForm,FiltrarForm,FiltrarLiberacaoForm
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///fiscal.db"
@@ -126,8 +127,14 @@ def visualizar_dados():
     form=FiltrarForm()
 
     if request.method == "POST":
-        remover = []
+        filtrar = []
 
+        id = form.id.data
+        nome = form.nome.data
+        grupo = form.nome.data
+        macro=form.nome.data
+        regime=form.regime.data
+        cnpj = form.cnpj.data
         dados = {"id" :form.id.data,
                  "nome":form.nome.data,
                  "grupo":form.grupo.data,
@@ -136,19 +143,34 @@ def visualizar_dados():
                  "cnpj":form.cnpj.data}
 
         for k,v in dados.items():
-            if v in ["",None]:
-                remover.append(k)
+            if v not in ["", None]:
+                filtrar.append(k)
 
-        for k in remover:
-            del dados[k]
-        print(dados)
+        texto = ''
+        for index,filtro in enumerate(filtrar):
+
+            if index + 1 == len(filtrar):
+                texto += f"{filtro}='{dados[filtro]}'"
+            else:
+                texto += f"{filtro}='{dados[filtro]}' AND "
+
+        print(texto)
 
 
+        if texto == "":
+            dados = Empresa.query.order_by(Empresa.grupo).all()
+        else:
+            sql = text(f"select * from empresas where {texto}")
+            dados = db.engine.execute(sql)
+
+
+
+        return render_template("visualizar_dados.html", dados=dados, form=form)
 
         # quantidade_liberada_total = db.session.query(Empresa).filter_by(grupo=grupo).filter_by(envio_email=True).count()
 
     dados=Empresa.query.order_by(Empresa.grupo).all()
-    return render_template("visualizar_dados.html",dados=dados,form=form,filtro=dados)
+    return render_template("visualizar_dados.html",dados=dados,form=form)
 
 @app.route("/atualizar_dados/<id>",methods=["GET","POST"])
 def atualizar_dados(id):
@@ -193,14 +215,74 @@ def atualizar_dados(id):
 @app.route("/liberar_empresas",methods=["GET","POST"])
 def liberar_empresas():
     formulario_de_liberacao = LiberacaoForm()
+    form = FiltrarLiberacaoForm()
     dados = Empresa.query.all()
     if request.method == "POST":
+
+
+        if form.filtrar.data:
+            if request.method == "POST":
+                filtrar = []
+
+                id = form.id.data
+                nome = form.nome.data
+                grupo = form.nome.data
+                macro = form.nome.data
+                regime = form.regime.data
+                liberacao = form.liberacao.data
+                if liberacao == "Sim":
+                    liberacao = 1
+                data_liberacao = form.data_liberacao.data
+                responsavel = form.responsavel_liberacao.data
+                movimento = form.movimento_liberacao.data
+
+                dados = {"id": form.id.data,
+                         "nome": form.nome.data,
+                         "grupo": form.grupo.data,
+                         "macro": form.macro.data,
+                         "regime": form.regime.data,
+                         "liberacao": liberacao,
+                         "data_liberacao":form.data_liberacao.data,
+                         "responsavel_liberacao":form.responsavel_liberacao.data,
+                         "movimento_liberacao":form.movimento_liberacao.data}
+
+                for k, v in dados.items():
+                    if v not in ["", None]:
+                        filtrar.append(k)
+
+                texto = ''
+                for index, filtro in enumerate(filtrar):
+
+                    if index + 1 == len(filtrar):
+                        texto += f"{filtro}='{dados[filtro]}'"
+
+                    elif filtro == "liberacao":
+                        texto += f"{filtro}={dados[filtro]}"
+
+                    else:
+                        texto += f"{filtro}='{dados[filtro]}' AND "
+
+                print(texto)
+
+                if texto == "":
+                    query = Empresa.query.order_by(Empresa.grupo).all()
+                else:
+                    sql = text(f"select * from empresas where {texto}")
+                    query = db.engine.execute(sql)
+
+                print(query)
+
+                return render_template("liberadas.html",form=formulario_de_liberacao,dados=query,filtro=form)
+
+
         id = request.form["empresas"]
         ids = id.split(",")
         status_de_liberacao = False
         data = None
         responsavel_liberacao = None
         movimento_liberacao = None
+
+
         if formulario_de_liberacao.liberar.data:
             status_de_liberacao = True
             data = datetime.datetime.now()
@@ -224,7 +306,7 @@ def liberar_empresas():
             except AttributeError:
                 print(f"Empresa {codigo} não compõe a base de dados")
 
-    return render_template("liberadas.html",form=formulario_de_liberacao,dados=dados)
+    return render_template("liberadas.html",form=formulario_de_liberacao,dados=dados,filtro=form)
 
 @app.route("/apurar_empresas",methods=["GET","POST"])
 def apurar_empresas():
@@ -283,28 +365,6 @@ def resumo():
 
     return render_template("resumo.html")
 
-
-def emails():
-
-    return render_template("emails.html")
-
-
-def querys():
-    # quantidade_liberada_total = db.session.query(Empresa).filter_by(grupo=grupo).filter_by(envio_email=True).count()
-    #
-    # quantidade_total = db.session.query(Empresa).filter_by(grupo=grupo).count()
-
-    pass
-
-
-
-
-# def totais():
-#     grupos_e_quantidades_totais = {}
-#     for grupo in grupos:
-#         quantidade_total = db.session.query(Empresa).filter_by(grupo=grupo).count()
-#         grupos_e_quantidades_totais[f"{grupo}"] = quantidade_total
-#     return grupos_e_quantidades_totais
 
 
 if __name__ == "__main__":
