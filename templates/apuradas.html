@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+
+
+
+
+{% for msg in get_flashed_messages() %}
+<div class="alert alert-dark" role="alert">
+{{ msg }}
+</div>
+{% endfor %}
+
+<br/>
+<div>
+    <h1>Apurar empresas</h1>
+</div>
+<br/>
+<div>
+    <form method="POST">
+
+        {{ form.hidden_tag() }}
+
+        {{ form.empresas.label(class="form-label") }}
+        {{ form.empresas(class="form-control") }}
+
+        {{ form.responsavel_apuracao.label(class="form-label") }}
+        {{ form.responsavel_apuracao(class="form-control") }}
+
+        {{ form.movimento_apuracao.label(class="form-label") }}
+        {{ form.movimento_apuracao(class="form-control") }}
+
+        <br/>
+        {{ form.apurar(class="btn btn-primary") }}
+        {{ form.excluir_apuracao(class="btn btn-primary") }}
+
+
+
+    </form>
+</div>
+<br/>
+<div>
+    <table class="table table-responsive">
+        <thead>
+            <th>ID</th>
+            <th>Nome</th>
+            <th>Grupo</th>
+            <th>Macro</th>
+            <th>Regime</th>
+            <
+            <th>Liberada</th>
+            <th>Apurada</th>
+            <th>Data de Apuracao</th>
+            <th>Responsavel pela Apuracao</th>
+            <th>Movimento da Apuracao</th>
+        </thead>
+
+        {% for dado in dados %}
+            <tr>
+                <td>{{ dado.id }}</td>
+                <td>{{ dado.nome }}</td>
+                <td>{{ dado.grupo }}</td>
+                <td>{{ dado.macro }}</td>
+                <td>{{ dado.regime }}</td>
+
+
+                {% if dado.liberacao == True %}
+                    <td>Liberada</td>
+                {% else %}
+                    <td></td>
+                {% endif %}
+
+                {% if dado.apuracao == True %}
+                    <td>Apurada</td>
+                    <td>{{ dado.data_apuracao.strftime('%d/%m/%y')}}</td>
+                    <td>{{ dado.responsavel_apuracao }}</td>
+                    <td>{{ dado.movimento_apuracao }}</td>
+                {% else %}
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                {% endif %}
+
+
+            </tr>
+        {% endfor %}
+
+
+    </table>
+</div>
+
+
+
+{% endblock %}

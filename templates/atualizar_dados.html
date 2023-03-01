@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+
+    {% for msg in get_flashed_messages() %}
+    <div class="alert alert-dark" role="alert">
+    {{ msg }}
+    </div>
+
+    {% endfor %}
+    <br/>
+        <div>
+                <h1>Atualização de Cadastro de Empresas</h1>
+        </div>
+    <br/>
+
+    <form action="/atualizar_dados/{{ empresa.id }}" method="POST">
+      {{ form.hidden_tag() }}
+
+      {{ form.id.label(class="form-label") }}
+      {{ form.id(class="form-control",value=empresa.id) }}
+
+      {{ form.nome.label(class="form-label") }}
+      {{ form.nome(class="form-control",value=empresa.nome) }}
+
+      {{ form.grupo.label(class="form-label") }}
+      {{ form.grupo(class="form-control",value=empresa.grupo) }}
+
+      {{ form.macro.label(class="form-label") }}
+      {{ form.macro(class="form-control",value=empresa.macro) }}
+
+      {{ form.cnpj.label(class="form-label") }}
+      {{ form.cnpj(class="form-control",value=empresa.cnpj) }}
+
+      {{ form.regime.label(class="form-label") }}
+      {{ form.regime(class="form-control",value=empresa.regime) }}
+
+        <br/>
+      {{ form.alterar(class="btn btn-primary") }}
+      {{ form.deletar(class="btn btn-danger") }}
+    </form>
+
+
+
+{% endblock %}

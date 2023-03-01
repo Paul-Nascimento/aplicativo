@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+
+
+
+
+{% for msg in get_flashed_messages() %}
+<div class="alert alert-warning alert-dismissible fade show" role="alert">
+{{ msg }}
+</div>
+{% endfor %}
+
+<br/>
+<div>
+    <h1>Liberar empresas</h1>
+</div>
+<br/>
+
+<div>
+    <form method="POST">
+
+        {{ form.hidden_tag() }}
+
+        {{ form.empresas.label(class="form-label") }}
+        {{ form.empresas(class="form-control") }}
+
+        {{ form.responsavel_liberacao.label(class="form-label") }}
+        {{ form.responsavel_liberacao(class="form-control") }}
+
+        {{ form.movimento_liberacao.label(class="form-label") }}
+        {{ form.movimento_liberacao(class="form-control") }}
+
+        <br/>
+        {{ form.liberar(class="btn btn-primary") }}
+        {{ form.excluir_liberacao(class="btn btn-danger") }}
+
+
+
+    </form>
+</div>
+<br/>
+<div>
+    <table class="table table-hover">
+        <form method="post">
+            <thead>
+                <tr>
+                    <th> {{ filtro.id.label }}</th>
+                    <th>{{ filtro.nome.label}}</th>
+                    <th> {{ filtro.grupo.label}}</th>
+
+                    <th>{{ filtro.macro.label}}</th>
+                    <th>{{  filtro.regime.label }}</th>
+                    <th>{{filtro.liberacao.label}}</th>
+                    <th>{{ filtro.data_liberacao.label }}</th>
+                    <th>{{  filtro.responsavel_liberacao.label }}</th>
+                    <th>{{filtro.movimento_liberacao.label}}</th>
+                    <th>{{ filtro.filtrar }}</th>
+                </tr>
+            <tr>
+                    <th> {{ filtro.id(class="form-control") }}</th>
+                    <th>{{ filtro.nome(class="form-control")}}</th>
+                    <th> {{ filtro.grupo(class="form-control")}}</th>
+
+                    <th>{{ filtro.macro(class="form-control")}}</th>
+                    <th>{{  filtro.regime(class="form-control") }}</th>
+                    <th>{{filtro.liberacao(class="form-control")}}</th>
+                    <th>{{ filtro.data_liberacao(class="form-control") }}</th>
+                    <th>{{  filtro.responsavel_liberacao(class="form-control") }}</th>
+                    <th>{{filtro.movimento_liberacao(class="form-control")}}</th>
+                </tr>
+            </thead>
+        </form>
+
+        {% for dado in dados %}
+                <tr>
+                    <td>{{ dado.id }}</td>
+                    <td>{{ dado.nome }}</td>
+                    <td>{{ dado.grupo }}</td>
+                    <td>{{ dado.macro }}</td>
+                    <td>{{ dado.regime }}</td>
+
+
+                    {% if dado.liberacao == True %}
+                        <td>Sim</td>
+                        <td>{{ dado.data_liberacao.strftime("%d/%m/%y") }}</td>
+                        <td>{{ dado.responsavel_liberacao }}</td>
+                        <td>{{ dado.movimento_liberacao }}</td>
+                    {% else %}
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    {% endif %}
+
+
+                </tr>
+            {% endfor %}
+
+
+    </table>
+</div>
+
+
+
+{% endblock %}

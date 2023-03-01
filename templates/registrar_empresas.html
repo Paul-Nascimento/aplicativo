@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<br/>
+<div>
+    <h1>Registrar Empresas</h1>
+</div>
+<br/>
+
+<form action="{{ url_for('registrar_empresas') }}" method="POST">
+  {{ form.hidden_tag() }}
+
+  {{ form.id.label(class="form-label") }}
+  {{ form.id(class="form-control") }}
+
+  {{ form.nome.label(class="form-label") }}
+  {{ form.nome(class="form-control") }}
+
+  {{ form.grupo.label(class="form-label") }}
+  {{ form.grupo(class="form-control") }}
+
+  {{ form.macro.label(class="form-label") }}
+  {{ form.macro(class="form-control") }}
+
+  {{ form.cnpj.label(class="form-label") }}
+  {{ form.cnpj(class="form-control") }}
+
+  {{ form.regime.label(class="form-label") }}
+  {{ form.regime(class="form-control") }}
+
+  {{ form.registrar(class="btn btn-primary") }}
+</form>
+{% endblock %}

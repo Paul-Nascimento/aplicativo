@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<br/>
+<div>
+    <h1>Registrar Empresas</h1>
+</div>
+<br/>
+
+<form method="POST">
+
+      {{ form.hidden_tag() }}
+
+            {{ form.id.label(class="form-label") }}
+            {{ form.id(class="form-control") }}
+
+            {{ form.demanda.label(class="form-label") }}
+            {{ form.demanda(class="form-control") }}
+
+            {{ form.meio.label(class="form-label") }}
+            {{ form.meio(class="form-control") }}
+
+            {{ form.responsavel.label(class="form-label") }}
+            {{ form.responsavel(class="form-control") }}
+
+            {{ form.quantidade.label(class="form-label") }}
+            {{ form.quantidade(class="form-control") }}
+
+            {{ form.numero_da_nota.label(class="form-label") }}
+            {{ form.numero_da_nota(class="form-control") }}
+
+            {{ form.fazer_nota(class="btn btn-primary") }}
+
+    </form>
+{% endblock %}

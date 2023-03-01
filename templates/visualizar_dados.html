@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+
+<br/>
+<div>
+    <h1>Dados Gerais</h1>
+</div>
+<br/>
+ <table class="table table-bordered table-hover">
+
+     <form method="post">
+            <thead>
+                <tr>
+                    <td>{{ form.id.label(class="form-label") }}</td>
+                    <td>{{ form.nome.label(class="form-label") }}</td>
+                    <td>{{ form.grupo.label(class="form-label") }}</td>
+                    <td>{{ form.macro.label(class="form-label") }}</td>
+                    <td>{{ form.regime.label(class="form-label") }}</td>
+                    <td>{{ form.cnpj.label(class="form-label") }}</td>
+                    <td>{{ form.filtrar.label(class="form-label") }}</td>
+                </tr>
+                <tr>
+                    <td>{{ form.id(class="form-control") }}</td>
+                    <td>{{ form.nome(class="form-control") }}</td>
+                    <td>{{ form.grupo(class="form-control") }}</td>
+                    <td>{{ form.macro(class="form-control") }}</td>
+                    <td>{{ form.regime(class="form-control") }}</td>
+                    <td>{{ form.cnpj(class="form-control") }}</td>
+                    <td>{{ form.filtrar(class="form-control") }}</td>
+                    </tr>
+            </thead>
+        </form>
+        <tbody>
+        {% for dado in dados %}
+
+
+            <tr>
+                <td>{{ dado.id }}</td>
+                <td>{{ dado.nome }}</td>
+                <td>{{ dado.grupo }}</td>
+                <td>{{ dado.macro }}</td>
+                {% if dado.regime == None %}
+
+                    <td></td>
+
+                {% else %}
+                    <td>{{ dado.regime }}</td>
+
+
+                {% endif %}
+                <td>{{ dado.cnpj }}</td>
+                <td><a href="{{ url_for('atualizar_dados',id=dado.id)}}">Atualizar</a></td>
+            </tr>
+        {% endfor %}
+     </tbody>
+    </table>
+
+
+
+
+{% endblock %}
