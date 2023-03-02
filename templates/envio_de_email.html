@@ -14,7 +14,7 @@
 
 <br/>
 <div>
-    <h1>Apurar empresas</h1>
+    <h1>Conferir empresas</h1>
 </div>
 <br/>
 
@@ -26,15 +26,14 @@
         {{ form.empresas.label(class="form-label") }}
         {{ form.empresas(class="form-control") }}
 
-        {{ form.responsavel_apuracao.label(class="form-label") }}
-        {{ form.responsavel_apuracao(class="form-control") }}
+        {{ form.responsavel_envio_email.label(class="form-label") }}
+        {{ form.responsavel_envio_email(class="form-control") }}
 
-        {{ form.movimento_apuracao.label(class="form-label") }}
-        {{ form.movimento_apuracao(class="form-control") }}
+
 
         <br/>
-        {{ form.apurar(class="btn btn-primary") }}
-        {{ form.excluir_apuracao(class="btn btn-danger") }}
+        {{ form.envio_de_email(class="btn btn-primary") }}
+        {{ form.excluir_envio_de_email(class="btn btn-danger") }}
 
 
 
@@ -52,12 +51,12 @@
 
                     <th>{{ filtro.macro.label}}</th>
                     <th>{{  filtro.regime.label }}</th>
-                    <th>{{  filtro.liberacao.label}}</th>
+                    <th>{{  filtro.conferencia.label}}</th>
 
-                    <th>{{  filtro.apuracao.label}}</th>
-                    <th>{{  filtro.data_apuracao.label }}</th>
-                    <th>{{  filtro.responsavel_apuracao.label }}</th>
-                    <th>{{  filtro.movimento_apuracao.label}}</th>
+                    <th>{{  filtro.envio_de_email.label}}</th>
+                    <th>{{  filtro.data_envio_de_email.label }}</th>
+                    <th>{{  filtro.responsavel_envio_email.label }}</th>
+
                     <th>{{ filtro.filtrar }}</th>
                 </tr>
             <tr>
@@ -67,12 +66,12 @@
 
                     <th>{{  filtro.macro(class="form-control")}}</th>
                     <th>{{  filtro.regime(class="form-control") }}</th>
-                    <th>{{  filtro.liberacao(class="form-control")}}</th>
+                    <th>{{  filtro.conferencia(class="form-control")}}</th>
 
-                    <th>{{  filtro.apuracao(class="form-control")}}</th>
-                    <th>{{  filtro.data_apuracao(class="form-control") }}</th>
-                    <th>{{  filtro.responsavel_apuracao(class="form-control") }}</th>
-                    <th>{{  filtro.movimento_apuracao(class="form-control")}}</th>
+                    <th>{{  filtro.envio_de_email(class="form-control")}}</th>
+                    <th>{{  filtro.data_envio_de_email(class="form-control") }}</th>
+                    <th>{{  filtro.responsavel_envio_email(class="form-control") }}</th>
+
                 </tr>
             </thead>
         </form>
@@ -84,31 +83,20 @@
                     <td>{{ dado.grupo }}</td>
                     <td>{{ dado.macro }}</td>
                     <td>{{ dado.regime }}</td>
-
-
-                    {% if dado.apuracao == True %}
-
-                         {% if dado.liberacao == True %}
+                    {% if dado.conferencia == True %}
                             <td>Sim</td>
                         {% else %}
                             <td>Não</td>
-                        {% endif %}
+                    {% endif %}
+
+                    {% if dado.envio_de_email == True %}
 
                         <td>Sim</td>
+                        <td>{{ dado.data_envio_email|string()}}</td>
+                        <td>{{ dado.responsavel_envio_email }}</td>
 
-                        <td>{{ dado.data_apuracao|string()}}</td>
-                        <td>{{ dado.responsavel_apuracao }}</td>
-                        <td>{{ dado.movimento_apuracao }}</td>
                     {% else %}
-
-                        {% if dado.liberacao == True %}
-                            <td>Sim</td>
-                        {% else %}
-                            <td>Não</td>
-                        {% endif %}
-
-                        <td></td>
-                        <td></td>
+                        <td>Não</td>
                         <td></td>
                         <td></td>
                     {% endif %}

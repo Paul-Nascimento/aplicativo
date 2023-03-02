@@ -5,8 +5,9 @@ from flask_wtf import FlaskForm
 from wtforms import StringField,SubmitField,DateField,IntegerField,SelectField
 from wtforms.validators import DataRequired,NumberRange
 import datetime
-from forms import LiberacaoForm,ApuracaoForm,RegistrarEmpresaForm,AlteracaoForm,NotaFiscalForm,FiltrarForm,FiltrarLiberacaoForm
-
+from forms import LiberacaoForm,ApuracaoForm,RegistrarEmpresaForm,AlteracaoForm,NotaFiscalForm,FiltrarForm,\
+    FiltrarLiberacaoForm,FiltrarApuracaoForm,ConferenciaForm,FiltrarConferenciaForm,FiltrarEnvioDeEmailForm,\
+    EnvioDeEmailForm
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///fiscal.db"
 app.config['SECRET_KEY'] = "Ttestes"
@@ -83,7 +84,7 @@ class Empresa(db.Model):
         #Envio de Email
         self.envio_de_email = envio_de_email
         self.data_envio_de_email = data_envio_de_email
-        self.responsavel_envio_de_email = responsavel_envio_de_email
+        self.responsavel_envio_email = responsavel_envio_de_email
 
 class Emails(db.Model):
     __tablename__ = "emails"
@@ -308,14 +309,79 @@ def liberar_empresas():
 @app.route("/apurar_empresas",methods=["GET","POST"])
 def apurar_empresas():
     formulario_de_apuracao = ApuracaoForm()
-    dados = Empresa.query.all()
+    form = FiltrarApuracaoForm()
+    dados = Empresa.query.order_by(Empresa.grupo).all()
     if request.method == "POST":
+
+        if form.filtrar.data:
+            if request.method == "POST":
+                filtrar = []
+
+                id = form.id.data
+                nome = form.nome.data
+                grupo = form.nome.data
+                macro = form.nome.data
+                regime = form.regime.data
+                liberacao = form.liberacao.data
+                if liberacao == "Sim":
+                    liberacao = 1
+
+                apuracao = form.apuracao.data
+                if apuracao == "Sim":
+                    apuracao = 1
+
+                data_liberacao = form.data_apuracao.data
+                responsavel = form.responsavel_apuracao.data
+                movimento = form.movimento_apuracao.data
+
+                dados = {"id": form.id.data,
+                         "nome": form.nome.data,
+                         "grupo": form.grupo.data,
+                         "macro": form.macro.data,
+                         "regime": form.regime.data,
+                         "liberacao": liberacao,
+                         "apuracao": apuracao,
+                         "data_apuracao": form.data_apuracao.data,
+                         "responsavel_apuracao": form.responsavel_apuracao.data,
+                         "movimento_apuracao": form.movimento_apuracao.data}
+
+                for k, v in dados.items():
+                    if v not in ["", None]:
+                        filtrar.append(k)
+
+                texto = ''
+                for index, filtro in enumerate(filtrar):
+
+
+                    if index + 1 == len(filtrar) and (filtro == "liberacao" or filtro == "apuracao"):
+                        texto += f"{filtro}={dados[filtro]}"
+
+                    elif index + 1 == len(filtrar):
+                        texto += f"{filtro}='{dados[filtro]}'"
+
+                    elif filtro == "liberacao" or filtro == "apuracao":
+                        texto += f"{filtro}={dados[filtro]} AND "
+
+                    else:
+                        texto += f"{filtro}='{dados[filtro]}' AND "
+
+                print(texto)
+
+                if texto == "":
+                    query = Empresa.query.order_by(Empresa.grupo).all()
+                else:
+                    sql = text(f"select * from empresas where {texto} ORDER BY grupo")
+                    query = db.engine.execute(sql)
+
+                print(query)
+
+                return render_template("apuradas.html", form=formulario_de_apuracao, dados=query, filtro=form)
+
         id = request.form["empresas"]
         ids = id.split(",")
-
         status_de_apuracao = False
         data = None
-        responsavel_apuracao = None
+        responsavel_apuracao= None
         movimento_apuracao = None
 
         if formulario_de_apuracao.apurar.data:
@@ -323,31 +389,26 @@ def apurar_empresas():
             data = datetime.datetime.now()
             responsavel_apuracao = request.form["responsavel_apuracao"]
             movimento_apuracao = request.form["movimento_apuracao"]
+            flash(f"Empresas {ids} apuradas com sucesso")
         if formulario_de_apuracao.excluir_apuracao.data:
             status_de_apuracao = False
             data = None
             responsavel_apuracao = None
             movimento_apuracao = None
+            flash(f"Apuracao das empresas {ids} cancelado com sucesso")
         for codigo in ids:
             try:
                 update = Empresa.query.filter_by(id=codigo).first()
-                liberacao = update.liberacao
-                if liberacao == None:
-                    # flash("Empresa não liberada ainda")
-                    pass
-
-                else:
-                    # flash("Apurada com sucesso")
-                    update.apuracao = status_de_apuracao
-                    update.data_apuracao = data
-                    update.responsavel_apuracao = responsavel_apuracao
-                    update.movimento_apuracao = movimento_apuracao
-                # db.session.commit()
+                update.apuracao = status_de_apuracao
+                update.data_apuracao = data
+                update.responsavel_apuracao = responsavel_apuracao
+                update.movimento_apuracao = movimento_apuracao
+                db.session.commit()
             except AttributeError:
-                # flash(f"Empresa {codigo} não compõe a base de dados")
-                pass
+                print(f"Empresa {codigo} não compõe a base de dados")
 
-    return render_template("apuradas.html",form=formulario_de_apuracao,dados=dados)
+    return render_template("apuradas.html", form=formulario_de_apuracao, dados=dados, filtro=form)
+
 
 @app.route("/notas_fiscais",methods=["GET","POST"])
 def notas_fiscais():
@@ -358,16 +419,225 @@ def notas_fiscais():
 
 @app.route("/visualizar_emails",methods=["GET","POST"])
 def visualizar_emails():
-
     return render_template("visualizar_emails.html")
-
 
 @app.route("/resumo")
 def resumo():
-
     return render_template("resumo.html")
 
+@app.route("/conferir_empresas",methods=["GET","POST"])
+def conferir_empresas():
+    formulario_de_conferencia = ConferenciaForm()
+    form = FiltrarConferenciaForm()
+    dados = Empresa.query.order_by(Empresa.grupo).all()
+    if request.method == "POST":
 
+        if form.filtrar.data:
+            if request.method == "POST":
+                filtrar = []
+
+
+                apuracao = form.apuracao.data
+                if apuracao == "Sim":
+                    apuracao = 1
+
+                conferencia = form.conferencia.data
+                if conferencia == "Sim":
+                    conferencia = 1
+
+
+
+                dados = {"id": form.id.data,
+                         "nome": form.nome.data,
+                         "grupo": form.grupo.data,
+                         "macro": form.macro.data,
+                         "regime": form.regime.data,
+                         "apuracao": apuracao,
+                         "conferencia": conferencia,
+                         "data_apuracao": form.data_conferencia.data,
+                         "responsavel_apuracao": form.responsavel_conferencia.data
+                         }
+
+                for k, v in dados.items():
+                    if v not in ["", None]:
+                        filtrar.append(k)
+
+                texto = ''
+                for index, filtro in enumerate(filtrar):
+
+
+                    if index + 1 == len(filtrar) and (filtro == "conferencia" or filtro == "apuracao"):
+                        texto += f"{filtro}={dados[filtro]}"
+
+                    elif index + 1 == len(filtrar):
+                        texto += f"{filtro}='{dados[filtro]}'"
+
+                    elif filtro == "conferencia" or filtro == "apuracao":
+                        texto += f"{filtro}={dados[filtro]} AND "
+
+                    else:
+                        texto += f"{filtro}='{dados[filtro]}' AND "
+
+                print(texto)
+
+                if texto == "":
+                    query = Empresa.query.order_by(Empresa.grupo).all()
+                else:
+                    sql = text(f"select * from empresas where {texto} ORDER BY grupo")
+                    query = db.engine.execute(sql)
+
+                print(query)
+
+                return render_template("conferencia.html", form=formulario_de_conferencia, dados=query, filtro=form)
+
+        id = request.form["empresas"]
+        ids = id.split(",")
+        status_de_conferencia = False
+        data = None
+        responsavel_conferencia= None
+
+
+        if formulario_de_conferencia.conferir.data:
+            status_de_conferencia = True
+            data = datetime.datetime.now()
+            responsavel_conferencia = request.form["responsavel_conferencia"]
+
+            flash(f"Empresas {ids} apuradas com sucesso")
+        if formulario_de_conferencia.excluir_conferencia.data:
+            status_de_conferencia = False
+            data = None
+
+
+            flash(f"Apuracao das empresas {ids} cancelado com sucesso")
+        for codigo in ids:
+            try:
+                update = Empresa.query.filter_by(id=codigo).first()
+                update.conferencia = status_de_conferencia
+                update.data_conferencia = data
+                update.responsavel_conferencia = responsavel_conferencia
+
+                db.session.commit()
+            except AttributeError:
+                print(f"Empresa {codigo} não compõe a base de dados")
+
+    return render_template("conferencia.html", form=formulario_de_conferencia, dados=dados, filtro=form)
+
+@app.route("/enviar_emails_das_empresas",methods=["GET","POST"])
+def enviar_emails_das_empresas():
+    formulario_de_envio_de_email = EnvioDeEmailForm()
+    form = FiltrarEnvioDeEmailForm()
+    dados = Empresa.query.order_by(Empresa.grupo).all()
+    if request.method == "POST":
+
+        if form.filtrar.data:
+            if request.method == "POST":
+                filtrar = []
+
+
+
+
+                envio_de_email = form.envio_de_email.data
+                if envio_de_email == "Sim":
+                    envio_de_email = 1
+
+                conferencia = form.conferencia.data
+                if conferencia == "Sim":
+                    conferencia = 1
+
+
+                dados = {"id": form.id.data,
+                         "nome": form.nome.data,
+                         "grupo": form.grupo.data,
+                         "macro": form.macro.data,
+                         "regime": form.regime.data,
+                         "envio_email": envio_de_email,
+                         "conferencia": conferencia,
+                         "data_envio_email": form.data_envio_de_email.data,
+                         "responsavel_envio_email": form.responsavel_envio_email.data
+                         }
+
+                for k, v in dados.items():
+                    if v not in ["", None]:
+                        filtrar.append(k)
+
+                texto = ''
+                for index, filtro in enumerate(filtrar):
+
+
+                    if index + 1 == len(filtrar) and (filtro == "conferencia" or filtro == "envio_de_email"):
+                        texto += f"{filtro}={dados[filtro]}"
+
+                    elif index + 1 == len(filtrar):
+                        texto += f"{filtro}='{dados[filtro]}'"
+
+                    elif filtro == "conferencia" or filtro == "envio_de_email":
+                        texto += f"{filtro}={dados[filtro]} AND "
+
+                    else:
+                        texto += f"{filtro}='{dados[filtro]}' AND "
+
+                print(texto)
+
+                if texto == "":
+                    query = Empresa.query.order_by(Empresa.grupo).all()
+                else:
+                    sql = text(f"select * from empresas where {texto} ORDER BY grupo")
+                    query = db.engine.execute(sql)
+
+                print(query)
+
+                return render_template("envio_de_email.html", form=formulario_de_envio_de_email, dados=query, filtro=form)
+
+        id = request.form["empresas"]
+        ids = id.split(",")
+        status_de_envio_de_email = None
+        data = None
+        responsavel_envio_email= None
+
+
+        if formulario_de_envio_de_email.envio_de_email.data:
+            status_de_envio_de_email = True
+            data = datetime.datetime.now()
+            responsavel_envio_email = request.form["responsavel_envio_email"]
+
+            flash(f"Registro de envio de email das empresas: {ids} feito com sucesso")
+        if formulario_de_envio_de_email.excluir_envio_de_email.data:
+            status_de_envio_de_email = None
+            data = None
+
+
+            flash(f"Registro de envio de email das empresas: {ids} cancelado com sucesso")
+        for codigo in ids:
+            print(codigo)
+            try:
+                print(status_de_envio_de_email)
+                print(data)
+                print(responsavel_envio_email)
+                update = Empresa.query.filter_by(id=codigo).first()
+                update.envio_email = status_de_envio_de_email
+                update.data_envio_email = data
+                update.responsavel_envio_email = responsavel_envio_email
+                print('Comit feito')
+                db.session.commit()
+            except AttributeError:
+
+                print(f"Empresa {codigo} não compõe a base de dados")
+
+    return render_template("envio_de_email.html", form=formulario_de_envio_de_email, dados=dados, filtro=form)
+
+@app.errorhandler(404)
+def error_page(e):
+    return render_template("error_page.html"),404
+@app.errorhandler(500)
+def error_page(e):
+    return render_template("error_page.html"),500
+@app.errorhandler(403)
+def error_page(e):
+    return render_template("error_page.html"),403
+@app.errorhandler(410)
+def error_page(e):
+    return render_template("error_page.html"),410
 
 if __name__ == "__main__":
     app.run(debug=True)
+

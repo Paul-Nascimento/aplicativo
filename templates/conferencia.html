@@ -14,7 +14,7 @@
 
 <br/>
 <div>
-    <h1>Apurar empresas</h1>
+    <h1>Conferir empresas</h1>
 </div>
 <br/>
 
@@ -26,15 +26,14 @@
         {{ form.empresas.label(class="form-label") }}
         {{ form.empresas(class="form-control") }}
 
-        {{ form.responsavel_apuracao.label(class="form-label") }}
-        {{ form.responsavel_apuracao(class="form-control") }}
+        {{ form.responsavel_conferencia.label(class="form-label") }}
+        {{ form.responsavel_conferencia(class="form-control") }}
 
-        {{ form.movimento_apuracao.label(class="form-label") }}
-        {{ form.movimento_apuracao(class="form-control") }}
+
 
         <br/>
-        {{ form.apurar(class="btn btn-primary") }}
-        {{ form.excluir_apuracao(class="btn btn-danger") }}
+        {{ form.conferir(class="btn btn-primary") }}
+        {{ form.excluir_conferencia(class="btn btn-danger") }}
 
 
 
@@ -52,12 +51,12 @@
 
                     <th>{{ filtro.macro.label}}</th>
                     <th>{{  filtro.regime.label }}</th>
-                    <th>{{  filtro.liberacao.label}}</th>
-
                     <th>{{  filtro.apuracao.label}}</th>
-                    <th>{{  filtro.data_apuracao.label }}</th>
-                    <th>{{  filtro.responsavel_apuracao.label }}</th>
-                    <th>{{  filtro.movimento_apuracao.label}}</th>
+
+                    <th>{{  filtro.conferencia.label}}</th>
+                    <th>{{  filtro.data_conferencia.label }}</th>
+                    <th>{{  filtro.responsavel_conferencia.label }}</th>
+
                     <th>{{ filtro.filtrar }}</th>
                 </tr>
             <tr>
@@ -67,12 +66,12 @@
 
                     <th>{{  filtro.macro(class="form-control")}}</th>
                     <th>{{  filtro.regime(class="form-control") }}</th>
-                    <th>{{  filtro.liberacao(class="form-control")}}</th>
-
                     <th>{{  filtro.apuracao(class="form-control")}}</th>
-                    <th>{{  filtro.data_apuracao(class="form-control") }}</th>
-                    <th>{{  filtro.responsavel_apuracao(class="form-control") }}</th>
-                    <th>{{  filtro.movimento_apuracao(class="form-control")}}</th>
+
+                    <th>{{  filtro.conferencia(class="form-control")}}</th>
+                    <th>{{  filtro.data_conferencia(class="form-control") }}</th>
+                    <th>{{  filtro.responsavel_conferencia(class="form-control") }}</th>
+
                 </tr>
             </thead>
         </form>
@@ -86,9 +85,9 @@
                     <td>{{ dado.regime }}</td>
 
 
-                    {% if dado.apuracao == True %}
+                    {% if dado.conferencia == True %}
 
-                         {% if dado.liberacao == True %}
+                         {% if dado.apuracao == True %}
                             <td>Sim</td>
                         {% else %}
                             <td>Não</td>
@@ -96,12 +95,12 @@
 
                         <td>Sim</td>
 
-                        <td>{{ dado.data_apuracao|string()}}</td>
-                        <td>{{ dado.responsavel_apuracao }}</td>
-                        <td>{{ dado.movimento_apuracao }}</td>
+                        <td>{{ dado.data_conferencia|string()}}</td>
+                        <td>{{ dado.responsavel_conferencia }}</td>
+
                     {% else %}
 
-                        {% if dado.liberacao == True %}
+                        {% if dado.apuracao == True %}
                             <td>Sim</td>
                         {% else %}
                             <td>Não</td>
@@ -110,7 +109,7 @@
                         <td></td>
                         <td></td>
                         <td></td>
-                        <td></td>
+
                     {% endif %}
 
 
