@@ -14,7 +14,7 @@
 
 <br/>
 <div>
-    <h1>Conferir empresas</h1>
+    <h1>Enviar Emails</h1>
 </div>
 <br/>
 
@@ -54,12 +54,14 @@
                     <th>{{  filtro.conferencia.label}}</th>
 
                     <th>{{  filtro.envio_de_email.label}}</th>
+
+
                     <th>{{  filtro.data_envio_de_email.label }}</th>
                     <th>{{  filtro.responsavel_envio_email.label }}</th>
 
                     <th>{{ filtro.filtrar }}</th>
                 </tr>
-            <tr>
+                <tr>
                     <th> {{ filtro.id(class="form-control") }}</th>
                     <th>{{  filtro.nome(class="form-control")}}</th>
                     <th> {{ filtro.grupo(class="form-control")}}</th>
@@ -67,9 +69,9 @@
                     <th>{{  filtro.macro(class="form-control")}}</th>
                     <th>{{  filtro.regime(class="form-control") }}</th>
                     <th>{{  filtro.conferencia(class="form-control")}}</th>
-
                     <th>{{  filtro.envio_de_email(class="form-control")}}</th>
-                    <th>{{  filtro.data_envio_de_email(class="form-control") }}</th>
+
+                    <th>{{  filtro.data_envio_de_email(class="form-control")}}</th>
                     <th>{{  filtro.responsavel_envio_email(class="form-control") }}</th>
 
                 </tr>
@@ -83,23 +85,32 @@
                     <td>{{ dado.grupo }}</td>
                     <td>{{ dado.macro }}</td>
                     <td>{{ dado.regime }}</td>
+
                     {% if dado.conferencia == True %}
-                            <td>Sim</td>
-                        {% else %}
-                            <td>Não</td>
-                    {% endif %}
-
-                    {% if dado.envio_de_email == True %}
-
                         <td>Sim</td>
-                        <td>{{ dado.data_envio_email|string()}}</td>
-                        <td>{{ dado.responsavel_envio_email }}</td>
-
                     {% else %}
-                        <td>Não</td>
+                         <td>Não</td>
+                    {% endif %}
+
+
+                    {% if dado.envio_email == True %}
+                        <td>Sim</td>
+                        <td>{{ dado.data_envio_email }}</td>
+                        <td>{{ dado.responsavel_envio_email }}</td>
+                    {% else %}
+                         <td>Não</td>
                         <td></td>
                         <td></td>
                     {% endif %}
+
+
+
+
+
+
+
+
+
 
 
                 </tr>

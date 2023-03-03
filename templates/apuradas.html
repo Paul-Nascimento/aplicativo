@@ -53,6 +53,7 @@
                     <th>{{ filtro.macro.label}}</th>
                     <th>{{  filtro.regime.label }}</th>
                     <th>{{  filtro.liberacao.label}}</th>
+                    <th>{{  filtro.movimento_liberacao.label}}</th>
 
                     <th>{{  filtro.apuracao.label}}</th>
                     <th>{{  filtro.data_apuracao.label }}</th>
@@ -68,6 +69,7 @@
                     <th>{{  filtro.macro(class="form-control")}}</th>
                     <th>{{  filtro.regime(class="form-control") }}</th>
                     <th>{{  filtro.liberacao(class="form-control")}}</th>
+                    <th>{{  filtro.movimento_liberacao(class="form-control")}}</th>
 
                     <th>{{  filtro.apuracao(class="form-control")}}</th>
                     <th>{{  filtro.data_apuracao(class="form-control") }}</th>
@@ -85,29 +87,29 @@
                     <td>{{ dado.macro }}</td>
                     <td>{{ dado.regime }}</td>
 
-
                     {% if dado.apuracao == True %}
-
-                         {% if dado.liberacao == True %}
+                         {% if dado.liberacao == 1 %}
                             <td>Sim</td>
+                            <td>{{ dado.movimento_liberacao }}</td>
                         {% else %}
                             <td>Não</td>
+                            <td></td>
                         {% endif %}
-
                         <td>Sim</td>
 
                         <td>{{ dado.data_apuracao|string()}}</td>
                         <td>{{ dado.responsavel_apuracao }}</td>
                         <td>{{ dado.movimento_apuracao }}</td>
                     {% else %}
-
                         {% if dado.liberacao == True %}
                             <td>Sim</td>
+                            <td>{{ dado.movimento_liberacao }}</td>
                         {% else %}
                             <td>Não</td>
+                            <td></td>
                         {% endif %}
 
-                        <td></td>
+                        <td>Não</td>
                         <td></td>
                         <td></td>
                         <td></td>

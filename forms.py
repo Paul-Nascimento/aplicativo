@@ -7,7 +7,7 @@ from wtforms.validators import DataRequired,NumberRange
 responsaveis = ["","Sarah","Paulo","Larissa","Isabella","Josevane","Gabriela","Mario"]
 grupos = ["","1.0","2.0","3.0","4.1","4.2","4.3","5.1","5.2","5.3","5.4","6.1","6.2","6.3","6.4","6.5","6.6","6.7","6.8","6.9","9.0","9.4","10.0","11.1"]
 macros = ["","A.1","A.2","B.1","B.2","B.3","B.4","C.1"]
-movimentos=["","Sem Movimento","Ativo","S/M Fixo de ISS","S/M Fixo ICMS", "S/M Fixo ICMS e ISS"]
+movimentos=["","Sem Movimento","Ativo","S/M Fixo de ISS","S/M Fixo ICMS", "S/M Fixo ICMS e ISS","Ativo com Fixo de ICMS","Ativo com Fixo de ISS"]
 regimes = ["","SN","REAL","PRE"]
 class LiberacaoForm(FlaskForm):
 
@@ -89,7 +89,7 @@ class FiltrarLiberacaoForm(FlaskForm):
     macro = SelectField("Macro", choices=macros)
     regime = SelectField("Regime", choices=regimes)
 
-    liberacao = SelectField("Apuradas",choices=["","Sim"])
+    liberacao = SelectField("Liberadas",choices=["","Sim","Não"])
     data_liberacao = StringField("Data")
     responsavel_liberacao = SelectField("Responsavel",choices=responsaveis)
     movimento_liberacao = SelectField("Movimento",choices=movimentos)
@@ -101,8 +101,9 @@ class FiltrarApuracaoForm(FlaskForm):
     grupo = SelectField("Grupo", choices=grupos)
     macro = SelectField("Macro", choices=macros)
     regime = SelectField("Regime", choices=regimes)
-    liberacao = SelectField("Liberada", choices=["", "Sim"])
-    apuracao = SelectField("Apurada",choices=["","Sim"])
+    liberacao = SelectField("Liberada", choices=["", "Sim","Não"])
+    movimento_liberacao = SelectField("Movimento liberacao",choices=movimentos)
+    apuracao = SelectField("Apurada",choices=["","Sim","Não"])
     data_apuracao = StringField("Data")
     responsavel_apuracao = SelectField("Responsavel",choices=responsaveis)
     movimento_apuracao = SelectField("Movimento",choices=movimentos)
@@ -114,8 +115,9 @@ class FiltrarConferenciaForm(FlaskForm):
     grupo = SelectField("Grupo", choices=grupos)
     macro = SelectField("Macro", choices=macros)
     regime = SelectField("Regime", choices=regimes)
-    apuracao = SelectField("Apurada", choices=["", "Sim"])
-    conferencia = SelectField("Conferida", choices=["", "Sim"])
+    apuracao = SelectField("Apurada", choices=["", "Sim","Não"])
+    movimento_apuracao = SelectField("Movimento Apuracao",choices=movimentos)
+    conferencia = SelectField("Conferida", choices=["", "Sim","Não"])
 
     data_conferencia = StringField("Data")
     responsavel_conferencia = SelectField("Responsavel",choices=responsaveis)
@@ -128,8 +130,9 @@ class FiltrarEnvioDeEmailForm(FlaskForm):
     grupo = SelectField("Grupo", choices=grupos)
     macro = SelectField("Macro", choices=macros)
     regime = SelectField("Regime", choices=regimes)
-    envio_de_email = SelectField("Enviado", choices=["", "Sim"])
-    conferencia = SelectField("Conferida", choices=["", "Sim"])
+    conferencia = SelectField("Conferida", choices=["", "Sim","Não"])
+    envio_de_email = SelectField("Enviado", choices=["", "Sim","Não"])
+
     data_envio_de_email = StringField("Data")
     responsavel_envio_email = SelectField("Responsavel",choices=responsaveis)
 

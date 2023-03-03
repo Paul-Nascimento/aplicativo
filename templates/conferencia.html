@@ -52,6 +52,7 @@
                     <th>{{ filtro.macro.label}}</th>
                     <th>{{  filtro.regime.label }}</th>
                     <th>{{  filtro.apuracao.label}}</th>
+                    <th>{{  filtro.movimento_apuracao.label}}</th>
 
                     <th>{{  filtro.conferencia.label}}</th>
                     <th>{{  filtro.data_conferencia.label }}</th>
@@ -59,7 +60,7 @@
 
                     <th>{{ filtro.filtrar }}</th>
                 </tr>
-            <tr>
+                <tr>
                     <th> {{ filtro.id(class="form-control") }}</th>
                     <th>{{  filtro.nome(class="form-control")}}</th>
                     <th> {{ filtro.grupo(class="form-control")}}</th>
@@ -67,11 +68,11 @@
                     <th>{{  filtro.macro(class="form-control")}}</th>
                     <th>{{  filtro.regime(class="form-control") }}</th>
                     <th>{{  filtro.apuracao(class="form-control")}}</th>
+                    <th>{{  filtro.movimento_apuracao(class="form-control")}}</th>
 
                     <th>{{  filtro.conferencia(class="form-control")}}</th>
                     <th>{{  filtro.data_conferencia(class="form-control") }}</th>
                     <th>{{  filtro.responsavel_conferencia(class="form-control") }}</th>
-
                 </tr>
             </thead>
         </form>
@@ -89,12 +90,13 @@
 
                          {% if dado.apuracao == True %}
                             <td>Sim</td>
+                            <td>{{ dado.movimento_apuracao}}</td>
                         {% else %}
                             <td>Não</td>
+                            <td></td>
                         {% endif %}
 
                         <td>Sim</td>
-
                         <td>{{ dado.data_conferencia|string()}}</td>
                         <td>{{ dado.responsavel_conferencia }}</td>
 
@@ -102,11 +104,13 @@
 
                         {% if dado.apuracao == True %}
                             <td>Sim</td>
+                            <td>{{ dado.movimento_apuracao}}</td>
                         {% else %}
                             <td>Não</td>
+                            <td></td>
                         {% endif %}
 
-                        <td></td>
+                        <td>Não</td>
                         <td></td>
                         <td></td>
 

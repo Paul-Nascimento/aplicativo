@@ -80,27 +80,17 @@
                     <td>{{ dado.grupo }}</td>
                     <td>{{ dado.macro }}</td>
                     <td>{{ dado.regime }}</td>
-
-
                     {% if dado.liberacao == True %}
                         <td>Sim</td>
-
-
-
                         <td>{{ dado.data_liberacao|string()}}</td>
-
-
-
                         <td>{{ dado.responsavel_liberacao }}</td>
                         <td>{{ dado.movimento_liberacao }}</td>
                     {% else %}
-                        <td></td>
+                        <td>Não</td>
                         <td></td>
                         <td></td>
                         <td></td>
                     {% endif %}
-
-
                 </tr>
             {% endfor %}
 

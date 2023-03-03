@@ -232,9 +232,11 @@ def liberar_empresas():
                 liberacao = form.liberacao.data
                 if liberacao == "Sim":
                     liberacao = 1
-                data_liberacao = form.data_liberacao.data
-                responsavel = form.responsavel_liberacao.data
-                movimento = form.movimento_liberacao.data
+
+
+                if liberacao == "Não":
+                    liberacao = 0
+
 
                 dados = {"id": form.id.data,
                          "nome": form.nome.data,
@@ -253,14 +255,18 @@ def liberar_empresas():
                 texto = ''
                 for index, filtro in enumerate(filtrar):
 
-                    if index + 1 == len(filtrar):
+                    if index + 1 == len(filtrar) and (filtro == "liberacao"):
+                        texto += f"{filtro}={dados[filtro]}"
+
+                    elif index + 1 == len(filtrar):
                         texto += f"{filtro}='{dados[filtro]}'"
 
                     elif filtro == "liberacao":
-                        texto += f"{filtro}={dados[filtro]}"
+                        texto += f"{filtro}={dados[filtro]} AND "
 
                     else:
                         texto += f"{filtro}='{dados[filtro]}' AND "
+
 
                 print(texto)
 
@@ -317,22 +323,21 @@ def apurar_empresas():
             if request.method == "POST":
                 filtrar = []
 
-                id = form.id.data
-                nome = form.nome.data
-                grupo = form.nome.data
-                macro = form.nome.data
-                regime = form.regime.data
+
                 liberacao = form.liberacao.data
                 if liberacao == "Sim":
                     liberacao = 1
 
+                if liberacao == "Não":
+                    liberacao = 0
                 apuracao = form.apuracao.data
                 if apuracao == "Sim":
                     apuracao = 1
+                if apuracao == "Não":
+                    apuracao = 0
 
-                data_liberacao = form.data_apuracao.data
-                responsavel = form.responsavel_apuracao.data
-                movimento = form.movimento_apuracao.data
+                movimento_liberacao = form.movimento_liberacao.data
+
 
                 dados = {"id": form.id.data,
                          "nome": form.nome.data,
@@ -340,6 +345,7 @@ def apurar_empresas():
                          "macro": form.macro.data,
                          "regime": form.regime.data,
                          "liberacao": liberacao,
+                         "movimento_liberacao":movimento_liberacao,
                          "apuracao": apuracao,
                          "data_apuracao": form.data_apuracao.data,
                          "responsavel_apuracao": form.responsavel_apuracao.data,
@@ -440,10 +446,14 @@ def conferir_empresas():
                 apuracao = form.apuracao.data
                 if apuracao == "Sim":
                     apuracao = 1
+                if apuracao == "Não":
+                    apuracao= 0
 
                 conferencia = form.conferencia.data
                 if conferencia == "Sim":
                     conferencia = 1
+                if conferencia == "Não":
+                    conferencia = 0
 
 
 
@@ -453,6 +463,7 @@ def conferir_empresas():
                          "macro": form.macro.data,
                          "regime": form.regime.data,
                          "apuracao": apuracao,
+                         "movimento_apuracao":form.movimento_apuracao.data,
                          "conferencia": conferencia,
                          "data_apuracao": form.data_conferencia.data,
                          "responsavel_apuracao": form.responsavel_conferencia.data
@@ -524,7 +535,7 @@ def conferir_empresas():
 
 @app.route("/enviar_emails_das_empresas",methods=["GET","POST"])
 def enviar_emails_das_empresas():
-    formulario_de_envio_de_email = EnvioDeEmailForm()
+    formulario_de_envio_email = EnvioDeEmailForm()
     form = FiltrarEnvioDeEmailForm()
     dados = Empresa.query.order_by(Empresa.grupo).all()
     if request.method == "POST":
@@ -533,25 +544,27 @@ def enviar_emails_das_empresas():
             if request.method == "POST":
                 filtrar = []
 
-
-
-
-                envio_de_email = form.envio_de_email.data
-                if envio_de_email == "Sim":
-                    envio_de_email = 1
-
+                envio_email = form.envio_de_email.data
+                print(envio_email)
+                if envio_email == "Sim":
+                    envio_email= 1
+                if envio_email == "Não":
+                    envio_email= 0
+                print(envio_email)
                 conferencia = form.conferencia.data
                 if conferencia == "Sim":
                     conferencia = 1
-
+                if conferencia == "Não":
+                    conferencia = 0
 
                 dados = {"id": form.id.data,
                          "nome": form.nome.data,
                          "grupo": form.grupo.data,
                          "macro": form.macro.data,
                          "regime": form.regime.data,
-                         "envio_email": envio_de_email,
                          "conferencia": conferencia,
+                         "envio_email": envio_email,
+
                          "data_envio_email": form.data_envio_de_email.data,
                          "responsavel_envio_email": form.responsavel_envio_email.data
                          }
@@ -561,16 +574,17 @@ def enviar_emails_das_empresas():
                         filtrar.append(k)
 
                 texto = ''
+                print(filtrar)
                 for index, filtro in enumerate(filtrar):
 
-
-                    if index + 1 == len(filtrar) and (filtro == "conferencia" or filtro == "envio_de_email"):
+                    if index + 1 == len(filtrar) and (filtro == "envio_email" or filtro == "conferencia"):
                         texto += f"{filtro}={dados[filtro]}"
+                        print(texto)
 
                     elif index + 1 == len(filtrar):
                         texto += f"{filtro}='{dados[filtro]}'"
 
-                    elif filtro == "conferencia" or filtro == "envio_de_email":
+                    elif filtro == "conferencia" or filtro == "envio_email":
                         texto += f"{filtro}={dados[filtro]} AND "
 
                     else:
@@ -586,44 +600,38 @@ def enviar_emails_das_empresas():
 
                 print(query)
 
-                return render_template("envio_de_email.html", form=formulario_de_envio_de_email, dados=query, filtro=form)
+                return render_template("envio_de_email.html", form=formulario_de_envio_email, dados=query, filtro=form)
 
         id = request.form["empresas"]
         ids = id.split(",")
-        status_de_envio_de_email = None
-        data = None
-        responsavel_envio_email= None
+        status_de_envio_email = False
+        data_envio_email = None
+        responsavel_envio_email = None
 
-
-        if formulario_de_envio_de_email.envio_de_email.data:
-            status_de_envio_de_email = True
-            data = datetime.datetime.now()
+        if formulario_de_envio_email.envio_de_email.data:
+            status_de_envio_email = True
+            data_envio_email = datetime.datetime.now()
             responsavel_envio_email = request.form["responsavel_envio_email"]
 
-            flash(f"Registro de envio de email das empresas: {ids} feito com sucesso")
-        if formulario_de_envio_de_email.excluir_envio_de_email.data:
-            status_de_envio_de_email = None
-            data = None
+            flash(f"Empresas {ids} apuradas com sucesso")
+        if formulario_de_envio_email.excluir_envio_de_email.data:
+            status_de_envio_email= False
+            data_envio_email = None
 
-
-            flash(f"Registro de envio de email das empresas: {ids} cancelado com sucesso")
+            flash(f"Apuracao das empresas {ids} cancelado com sucesso")
         for codigo in ids:
-            print(codigo)
             try:
-                print(status_de_envio_de_email)
-                print(data)
-                print(responsavel_envio_email)
                 update = Empresa.query.filter_by(id=codigo).first()
-                update.envio_email = status_de_envio_de_email
-                update.data_envio_email = data
+                update.envio_email = status_de_envio_email
+                update.data_envio_email = data_envio_email
                 update.responsavel_envio_email = responsavel_envio_email
-                print('Comit feito')
-                db.session.commit()
-            except AttributeError:
 
+                db.session.commit()
+                print('Comitado')
+            except AttributeError:
                 print(f"Empresa {codigo} não compõe a base de dados")
 
-    return render_template("envio_de_email.html", form=formulario_de_envio_de_email, dados=dados, filtro=form)
+    return render_template("envio_de_email.html", form=formulario_de_envio_email, dados=dados, filtro=form)
 
 @app.errorhandler(404)
 def error_page(e):
