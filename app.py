@@ -1,5 +1,7 @@
+import sqlalchemy.exc
 from flask import Flask,render_template,request,url_for,redirect,flash,jsonify
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import select,func
 from sqlalchemy import text
 from flask_wtf import FlaskForm
 from wtforms import StringField,SubmitField,DateField,IntegerField,SelectField
@@ -7,7 +9,7 @@ from wtforms.validators import DataRequired,NumberRange
 import datetime
 from forms import LiberacaoForm,ApuracaoForm,RegistrarEmpresaForm,AlteracaoForm,NotaFiscalForm,FiltrarForm,\
     FiltrarLiberacaoForm,FiltrarApuracaoForm,ConferenciaForm,FiltrarConferenciaForm,FiltrarEnvioDeEmailForm,\
-    EnvioDeEmailForm
+    EnvioDeEmailForm,grupos
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///fiscal.db"
 app.config['SECRET_KEY'] = "Ttestes"
@@ -111,11 +113,16 @@ def registrar_empresas():
         regime = request.form["regime"]
 
         #Verifica se todas estão feitas corretamente
+        try:
+            empresa = Empresa(id,nome,grupo,macro,regime,cnpj)
+            db.session.add(empresa)
+            db.session.commit()
+            flash("Usuario registrado com sucesso")
 
-        empresa = Empresa(id,nome,grupo,macro,regime,cnpj)
-        db.session.add(empresa)
-        db.session.commit()
-        flash("Usuario registrado com sucesso")
+        except sqlalchemy.exc.IntegrityError:
+            flash("Empresa já adicionada anteriormente")
+            print('a')
+
 
 
     return render_template("registrar_empresas.html",form=formulario_de_registro)
@@ -415,7 +422,6 @@ def apurar_empresas():
 
     return render_template("apuradas.html", form=formulario_de_apuracao, dados=dados, filtro=form)
 
-
 @app.route("/notas_fiscais",methods=["GET","POST"])
 def notas_fiscais():
     formulario_de_notas = NotaFiscalForm()
@@ -429,6 +435,10 @@ def visualizar_emails():
 
 @app.route("/resumo")
 def resumo():
+
+
+    sum = Empresa.query.with_entities(func.count(Empresa.grupo).label('2.0')).total
+    print(sum)
     return render_template("resumo.html")
 
 @app.route("/conferir_empresas",methods=["GET","POST"])

@@ -30,5 +30,15 @@
   {{ form.regime(class="form-control") }}
 
   {{ form.registrar(class="btn btn-primary") }}
+
+
 </form>
+
+
+
+{% for msg in get_flashed_messages() %}
+<div class="alert alert-warning alert-dismissible fade show" role="alert">
+{{ msg }}
+</div>
+{% endfor %}
 {% endblock %}

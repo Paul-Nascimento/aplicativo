@@ -14,7 +14,6 @@ class LiberacaoForm(FlaskForm):
     empresas = StringField("Empresa",validators=[DataRequired()])
     responsavel_liberacao = SelectField("Responsável",choices=responsaveis,validators=[DataRequired()])
     movimento_liberacao = SelectField("Movimento",choices=movimentos,validators=[DataRequired()])
-
     liberar =SubmitField("Liberar")
     excluir_liberacao = SubmitField("Excluir Liberacao")
 
